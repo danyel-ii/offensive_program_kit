@@ -37,6 +37,11 @@ body,
   min-height: 100%;
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 body {
   margin: 0;
   font-family: "Sora", "Avenir Next", "Segoe UI", sans-serif;
@@ -137,6 +142,7 @@ a {
   color: var(--text-primary);
   padding: 14px 16px;
   outline: none;
+  font-size: 16px;
 }
 
 .install-card {
