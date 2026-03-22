@@ -363,6 +363,11 @@ a {
   background: rgba(220, 139, 224, 0.18);
 }
 
+.icon-badge.completed-badge {
+  background: rgba(100, 226, 183, 0.2);
+  color: #0c382b;
+}
+
 .split-board {
   display: grid;
   gap: 10px;
@@ -492,9 +497,82 @@ a {
 }
 
 .phase-list,
-.resource-grid {
+.resource-grid,
+.phase-progress-list {
   display: grid;
   gap: 12px;
+}
+
+.progress-card {
+  display: grid;
+  gap: 18px;
+}
+
+.progress-meter {
+  display: grid;
+  gap: 12px;
+}
+
+.progress-track {
+  width: 100%;
+  height: 14px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--mint), var(--orchid), var(--magenta));
+}
+
+.progress-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.progress-meta span,
+.phase-progress-row span {
+  color: var(--text-muted);
+}
+
+.phase-progress-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-soft);
+}
+
+.phase-progress-row div {
+  min-width: 0;
+}
+
+.phase-progress-row strong,
+.phase-progress-row span {
+  display: block;
+}
+
+.phase-progress-row.phase-shell {
+  border-left: 3px solid var(--cream);
+}
+
+.phase-progress-row.phase-pulse {
+  border-left: 3px solid var(--mint);
+}
+
+.phase-progress-row.phase-tide {
+  border-left: 3px solid var(--orchid);
+}
+
+.phase-progress-row.phase-ember {
+  border-left: 3px solid var(--magenta);
 }
 
 .phase-item,
@@ -567,6 +645,29 @@ a {
 
 .day-tabs {
   align-items: center;
+}
+
+.day-tab-shell {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.day-complete-toggle {
+  border: 1px solid rgba(17, 17, 21, 0.12);
+  cursor: pointer;
+  font: inherit;
+  border-radius: 999px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--text-dark);
+}
+
+.day-complete-toggle.active {
+  background: var(--mint);
+  color: #0d3126;
+  border-color: rgba(0, 0, 0, 0.08);
 }
 
 .markdown-card {
@@ -770,6 +871,16 @@ a {
     flex-wrap: wrap;
   }
 
+  .day-tab-shell {
+    width: 100%;
+  }
+
+  .day-tab,
+  .day-complete-toggle {
+    flex: 1 1 0;
+    justify-content: center;
+  }
+
   .split-row {
     grid-template-columns: 1fr;
   }
@@ -844,7 +955,8 @@ a {
   .search input,
   .sidebar-button,
   .resource-button,
-  .phase-item {
+  .phase-item,
+  .day-complete-toggle {
     padding: 12px 13px;
   }
 }

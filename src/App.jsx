@@ -5,6 +5,7 @@ const programDataUrl = `${import.meta.env.BASE_URL}programData.json`;
 const appIconUrl = `${import.meta.env.BASE_URL}icon.svg`;
 const installPromptEventName = "beforeinstallprompt";
 const boardAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+const completionStorageKey = "opk-day-completions-v1";
 
 const linkRenderer = new marked.Renderer();
 linkRenderer.link = function ({ href, title, tokens }) {
@@ -78,6 +79,10 @@ function randomBoardChar() {
   return boardAlphabet[Math.floor(Math.random() * boardAlphabet.length)];
 }
 
+function createDayCompletionKey(weekId, day) {
+  return `${weekId}::${day}`;
+}
+
 function App() {
   const [programData, setProgramData] = useState(null);
   const [selectedType, setSelectedType] = useState("dashboard");
@@ -90,6 +95,7 @@ function App() {
   const [installPrompt, setInstallPrompt] = useState(null);
   const [appInstalled, setAppInstalled] = useState(false);
   const [boardPhase, setBoardPhase] = useState("");
+  const [dayCompletionMap, setDayCompletionMap] = useState({});
 
   useEffect(() => {
     let cancelled = false;
@@ -120,6 +126,17 @@ function App() {
   }, [timerPaused]);
 
   useEffect(() => {
+    try {
+      const stored = window.localStorage.getItem(completionStorageKey);
+      if (stored) {
+        setDayCompletionMap(JSON.parse(stored));
+      }
+    } catch {
+      setDayCompletionMap({});
+    }
+  }, []);
+
+  useEffect(() => {
     function handleBeforeInstallPrompt(event) {
       event.preventDefault();
       setInstallPrompt(event);
@@ -138,6 +155,14 @@ function App() {
       window.removeEventListener("appinstalled", handleAppInstalled);
     };
   }, []);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(completionStorageKey, JSON.stringify(dayCompletionMap));
+    } catch {
+      // Ignore storage failures; the app still works without persistence.
+    }
+  }, [dayCompletionMap]);
 
   const selectedWeek =
     !programData || selectedType !== "week"
@@ -187,6 +212,14 @@ function App() {
     await installPrompt.prompt();
     await installPrompt.userChoice;
     setInstallPrompt(null);
+  }
+
+  function toggleDayCompletion(weekId, day) {
+    const key = createDayCompletionKey(weekId, day);
+    setDayCompletionMap((previous) => ({
+      ...previous,
+      [key]: !previous[key],
+    }));
   }
 
   if (!programData) {
@@ -364,6 +397,7 @@ function App() {
           <DashboardView
             data={programData}
             boardPhase={boardPhase}
+            dayCompletionMap={dayCompletionMap}
             seconds={seconds}
             timerPaused={timerPaused}
             onToggleTimer={() => setTimerPaused((previous) => !previous)}
@@ -377,6 +411,8 @@ function App() {
             week={selectedWeek}
             selectedDay={selectedDay}
             onSelectDay={setSelectedDay}
+            dayCompletionMap={dayCompletionMap}
+            onToggleDayCompletion={toggleDayCompletion}
           />
         )}
 
@@ -406,7 +442,16 @@ function SidebarButton({ active, title, meta, onClick, accentClass = "" }) {
   );
 }
 
-function DashboardView({ data, boardPhase, seconds, timerPaused, onToggleTimer, onSelectWeek, onSelectResource }) {
+function DashboardView({
+  data,
+  boardPhase,
+  dayCompletionMap,
+  seconds,
+  timerPaused,
+  onToggleTimer,
+  onSelectWeek,
+  onSelectResource,
+}) {
   const currentWeek = data.weeks[0];
   const boardRows = resolveBoardRows(data.toolRows, boardPhase);
 
@@ -437,6 +482,7 @@ function DashboardView({ data, boardPhase, seconds, timerPaused, onToggleTimer, 
       <section className="dashboard-grid">
         <CadenceCard data={data.cadence} seconds={seconds} timerPaused={timerPaused} onToggleTimer={onToggleTimer} />
         <PhaseProgressCard phases={data.phases} weeks={data.weeks} onSelectWeek={onSelectWeek} />
+        <ProgressOverviewCard phases={data.phases} weeks={data.weeks} dayCompletionMap={dayCompletionMap} />
         <ProgramOverviewCard note={data.overview} />
         <ResourceLaunchpadCard resources={data.resources} onSelectResource={onSelectResource} />
       </section>
@@ -610,12 +656,83 @@ function ResourceLaunchpadCard({ resources, onSelectResource }) {
   );
 }
 
-function WeekView({ week, selectedDay, onSelectDay }) {
+function ProgressOverviewCard({ phases, weeks, dayCompletionMap }) {
+  const totalDays = weeks.reduce((count, week) => count + week.daySections.length, 0);
+  const completedDays = weeks.reduce(
+    (count, week) =>
+      count +
+      week.daySections.filter((section) => {
+        const day = section.heading.split(" - ")[0];
+        return Boolean(dayCompletionMap[createDayCompletionKey(week.id, day)]);
+      }).length,
+    0,
+  );
+  const completionPercent = totalDays ? Math.round((completedDays / totalDays) * 100) : 0;
+
+  return (
+    <article className="card dark-card progress-card">
+      <div className="card-head">
+        <span className="icon-badge inverse">✓</span>
+        <div>
+          <p className="eyebrow">Progress overview</p>
+          <h3>Browser-saved completion</h3>
+        </div>
+      </div>
+
+      <div className="progress-meter">
+        <div className="progress-track">
+          <div className="progress-fill" style={{ width: `${completionPercent}%` }} />
+        </div>
+        <div className="progress-meta">
+          <strong>{completionPercent}% done</strong>
+          <span>
+            {completedDays} / {totalDays} day blocks
+          </span>
+        </div>
+      </div>
+
+      <div className="phase-progress-list">
+        {phases.map((phase, index) => {
+          const phaseWeeks = weeks.filter((week) => week.phase === phase.title);
+          const phaseTotal = phaseWeeks.reduce((count, week) => count + week.daySections.length, 0);
+          const phaseCompleted = phaseWeeks.reduce(
+            (count, week) =>
+              count +
+              week.daySections.filter((section) => {
+                const day = section.heading.split(" - ")[0];
+                return Boolean(dayCompletionMap[createDayCompletionKey(week.id, day)]);
+              }).length,
+            0,
+          );
+          const phasePercent = phaseTotal ? Math.round((phaseCompleted / phaseTotal) * 100) : 0;
+
+          return (
+            <div className={`phase-progress-row ${phaseColors[index]}`} key={phase.id}>
+              <div>
+                <strong>{phase.title}</strong>
+                <span>
+                  {phaseCompleted} / {phaseTotal} days
+                </span>
+              </div>
+              <small>{phasePercent}%</small>
+            </div>
+          );
+        })}
+      </div>
+    </article>
+  );
+}
+
+function WeekView({ week, selectedDay, onSelectDay, dayCompletionMap, onToggleDayCompletion }) {
   const activeSection =
     week.daySections.find((section) => section.heading.startsWith(selectedDay)) ?? week.daySections[0];
   const infoSections = week.overviewSections.filter((section) =>
     ["Weekly focus", "Expected weekly outcomes", "Tools used this week", "Required artifacts this week", "If behind schedule"].includes(section.heading),
   );
+  const completedCount = week.daySections.filter((section) => {
+    const day = section.heading.split(" - ")[0];
+    return Boolean(dayCompletionMap[createDayCompletionKey(week.id, day)]);
+  }).length;
 
   return (
     <>
@@ -626,6 +743,7 @@ function WeekView({ week, selectedDay, onSelectDay }) {
           <p>{week.intro || "Detailed weekly execution plan with explicit time blocks, outputs, and review prompts."}</p>
           <div className="pill-row">
             <span className="text-pill strong">Week {String(week.week).padStart(2, "0")}</span>
+            <span className="text-pill">{completedCount}/{week.daySections.length} days complete</span>
             {week.focus.map((item) => (
               <span className="text-pill" key={item}>
                 {item}
@@ -640,21 +758,33 @@ function WeekView({ week, selectedDay, onSelectDay }) {
           <div className="day-tabs">
             {week.daySections.map((section) => {
               const day = section.heading.split(" - ")[0];
+              const isCompleted = Boolean(dayCompletionMap[createDayCompletionKey(week.id, day)]);
               return (
-                <button
-                  className={`day-tab ${day === selectedDay ? "active" : ""}`}
-                  key={day}
-                  onClick={() => onSelectDay(day)}
-                >
-                  {day}
-                </button>
+                <div className="day-tab-shell" key={day}>
+                  <button
+                    className={`day-tab ${day === selectedDay ? "active" : ""}`}
+                    onClick={() => onSelectDay(day)}
+                  >
+                    {day}
+                  </button>
+                  <button
+                    className={`day-complete-toggle ${isCompleted ? "active" : ""}`}
+                    onClick={() => onToggleDayCompletion(week.id, day)}
+                    aria-pressed={isCompleted}
+                    aria-label={`${isCompleted ? "Mark incomplete" : "Mark complete"} for ${day}`}
+                  >
+                    {isCompleted ? "Completed" : "Complete"}
+                  </button>
+                </div>
               );
             })}
           </div>
 
           <article className="card light-card markdown-card">
             <div className="card-head">
-              <span className="icon-badge">□</span>
+              <span className={`icon-badge ${dayCompletionMap[createDayCompletionKey(week.id, selectedDay)] ? "completed-badge" : ""}`}>
+                {dayCompletionMap[createDayCompletionKey(week.id, selectedDay)] ? "✓" : "□"}
+              </span>
               <div>
                 <p className="eyebrow">Day plan</p>
                 <h3>{activeSection.heading}</h3>
