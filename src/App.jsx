@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { marked } from "marked";
 
 const programDataUrl = `${import.meta.env.BASE_URL}programData.json`;
+const appIconUrl = `${import.meta.env.BASE_URL}icon.svg`;
+const installPromptEventName = "beforeinstallprompt";
 
 const linkRenderer = new marked.Renderer();
 linkRenderer.link = function ({ href, title, tokens }) {
@@ -39,6 +41,9 @@ function App() {
   const [query, setQuery] = useState("");
   const [timerPaused, setTimerPaused] = useState(false);
   const [seconds, setSeconds] = useState(120 * 60);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [installPrompt, setInstallPrompt] = useState(null);
+  const [appInstalled, setAppInstalled] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -67,6 +72,26 @@ function App() {
     return () => window.clearInterval(timer);
   }, [timerPaused]);
 
+  useEffect(() => {
+    function handleBeforeInstallPrompt(event) {
+      event.preventDefault();
+      setInstallPrompt(event);
+    }
+
+    function handleAppInstalled() {
+      setAppInstalled(true);
+      setInstallPrompt(null);
+    }
+
+    window.addEventListener(installPromptEventName, handleBeforeInstallPrompt);
+    window.addEventListener("appinstalled", handleAppInstalled);
+
+    return () => {
+      window.removeEventListener(installPromptEventName, handleBeforeInstallPrompt);
+      window.removeEventListener("appinstalled", handleAppInstalled);
+    };
+  }, []);
+
   const selectedWeek =
     !programData || selectedType !== "week"
       ? null
@@ -93,6 +118,19 @@ function App() {
     if (!selectedWeek) return;
     setSelectedDay(selectedWeek.daySections[0]?.heading.split(" - ")[0] ?? "Saturday");
   }, [selectedId, selectedWeek]);
+
+  function selectView(type, id = "") {
+    setSelectedType(type);
+    setSelectedId(id);
+    setSidebarOpen(false);
+  }
+
+  async function handleInstall() {
+    if (!installPrompt) return;
+    await installPrompt.prompt();
+    await installPrompt.userChoice;
+    setInstallPrompt(null);
+  }
 
   if (!programData) {
     return (
@@ -128,14 +166,29 @@ function App() {
 
   return (
     <div className="shell">
-      <aside className="sidebar">
+      <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <div className="sidebar-brand">
-          <div className="brand-mark">OP</div>
+          <div className="brand-mark">
+            <img src={appIconUrl} alt="offensive_program_kit icon" />
+          </div>
           <div>
             <p className="eyebrow">React Study Board</p>
             <h1>offensive_program_kit</h1>
           </div>
+          <button className="sidebar-close" onClick={() => setSidebarOpen(false)} aria-label="Close navigation">
+            Close
+          </button>
         </div>
+
+        {installPrompt && !appInstalled ? (
+          <div className="install-card">
+            <p className="eyebrow">Install</p>
+            <strong>Save this board to your home screen.</strong>
+            <button className="primary-button install-button" onClick={handleInstall}>
+              Install app
+            </button>
+          </div>
+        ) : null}
 
         <label className="search">
           <span>Search notes and weeks</span>
@@ -150,16 +203,13 @@ function App() {
         <nav className="sidebar-nav">
           <button
             className={`nav-chip ${selectedType === "dashboard" ? "active" : ""}`}
-            onClick={() => setSelectedType("dashboard")}
+            onClick={() => selectView("dashboard")}
           >
             Dashboard
           </button>
           <button
             className={`nav-chip ${selectedType === "overview" ? "active" : ""}`}
-            onClick={() => {
-              setSelectedType("overview");
-              setSelectedId(programData.overview.id);
-            }}
+            onClick={() => selectView("overview", programData.overview.id)}
           >
             Program Overview
           </button>
@@ -173,10 +223,7 @@ function App() {
               accentClass={phaseColors[index]}
               title={phase.title}
               meta={phase.range}
-              onClick={() => {
-                setSelectedType("phase");
-                setSelectedId(phase.id);
-              }}
+              onClick={() => selectView("phase", phase.id)}
             />
           ))}
         </SidebarGroup>
@@ -188,10 +235,7 @@ function App() {
               active={selectedType === "week" && selectedId === week.id}
               title={week.title}
               meta={`Week ${String(week.week).padStart(2, "0")} · ${week.phase.replace("Phase ", "P")}`}
-              onClick={() => {
-                setSelectedType("week");
-                setSelectedId(week.id);
-              }}
+              onClick={() => selectView("week", week.id)}
             />
           ))}
         </SidebarGroup>
@@ -202,10 +246,7 @@ function App() {
               key={resource.id}
               active={selectedType === "resource" && selectedId === resource.id}
               title={resource.title.replace(/^#\s*/, "")}
-              onClick={() => {
-                setSelectedType("resource");
-                setSelectedId(resource.id);
-              }}
+              onClick={() => selectView("resource", resource.id)}
             />
           ))}
         </SidebarGroup>
@@ -216,10 +257,7 @@ function App() {
               key={tool.id}
               active={selectedType === "tool" && selectedId === tool.id}
               title={tool.title}
-              onClick={() => {
-                setSelectedType("tool");
-                setSelectedId(tool.id);
-              }}
+              onClick={() => selectView("tool", tool.id)}
             />
           ))}
         </SidebarGroup>
@@ -230,10 +268,7 @@ function App() {
               key={concept.id}
               active={selectedType === "concept" && selectedId === concept.id}
               title={concept.title}
-              onClick={() => {
-                setSelectedType("concept");
-                setSelectedId(concept.id);
-              }}
+              onClick={() => selectView("concept", concept.id)}
             />
           ))}
         </SidebarGroup>
@@ -244,30 +279,38 @@ function App() {
               key={note.id}
               active={selectedType === "admin" && selectedId === note.id}
               title={note.title}
-              onClick={() => {
-                setSelectedType("admin");
-                setSelectedId(note.id);
-              }}
+              onClick={() => selectView("admin", note.id)}
             />
           ))}
         </SidebarGroup>
       </aside>
 
+      <button
+        className={`sidebar-overlay ${sidebarOpen ? "open" : ""}`}
+        onClick={() => setSidebarOpen(false)}
+        aria-label="Close navigation overlay"
+      />
+
       <main className="content">
+        <div className="mobile-toolbar">
+          <button className="mobile-nav-toggle" onClick={() => setSidebarOpen(true)}>
+            Menu
+          </button>
+          {installPrompt && !appInstalled ? (
+            <button className="secondary-button mobile-install-button" onClick={handleInstall}>
+              Install
+            </button>
+          ) : null}
+        </div>
+
         {selectedType === "dashboard" && (
           <DashboardView
             data={programData}
             seconds={seconds}
             timerPaused={timerPaused}
             onToggleTimer={() => setTimerPaused((previous) => !previous)}
-            onSelectWeek={(weekId) => {
-              setSelectedType("week");
-              setSelectedId(weekId);
-            }}
-            onSelectResource={(resourceId) => {
-              setSelectedType("resource");
-              setSelectedId(resourceId);
-            }}
+            onSelectWeek={(weekId) => selectView("week", weekId)}
+            onSelectResource={(resourceId) => selectView("resource", resourceId)}
           />
         )}
 
