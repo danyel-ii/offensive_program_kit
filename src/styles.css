@@ -251,6 +251,7 @@ a {
 
 .content {
   padding: 28px;
+  min-width: 0;
 }
 
 .mobile-toolbar,
@@ -294,6 +295,7 @@ a {
   padding: 28px;
   box-shadow: var(--shadow-dark);
   margin-bottom: 24px;
+  min-width: 0;
 }
 
 .hero-card.compact {
@@ -323,6 +325,7 @@ a {
 .card {
   border-radius: var(--radius-xl);
   padding: 28px;
+  min-width: 0;
 }
 
 .light-card {
@@ -559,6 +562,7 @@ a {
 .week-side {
   display: grid;
   gap: 18px;
+  min-width: 0;
 }
 
 .day-tabs {
@@ -571,6 +575,9 @@ a {
 
 .markdown-body {
   line-height: 1.75;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .markdown-body h1,
@@ -586,12 +593,53 @@ a {
   margin: 0.42em 0;
 }
 
+.markdown-body ul,
+.markdown-body ol,
+.markdown-body blockquote,
+.markdown-body table,
+.markdown-body pre,
+.markdown-body img,
+.markdown-body svg,
+.markdown-body iframe {
+  max-width: 100%;
+}
+
+.markdown-body a,
+.markdown-body strong,
+.markdown-body em,
+.markdown-body span {
+  overflow-wrap: anywhere;
+}
+
 .markdown-body code {
   background: rgba(213, 11, 139, 0.08);
   border-radius: 6px;
   padding: 0.15em 0.45em;
   font-family: "JetBrains Mono", monospace;
   font-size: 0.92em;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.markdown-body pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-x: hidden;
+}
+
+.markdown-body pre code {
+  display: block;
+  white-space: pre-wrap;
+}
+
+.meta-card strong,
+.sidebar-button span,
+.resource-button strong,
+.phase-item strong,
+.phase-item span,
+.phase-item small,
+.split-label {
+  overflow-wrap: anywhere;
 }
 
 .meta-grid {
