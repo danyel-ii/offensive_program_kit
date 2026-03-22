@@ -1,0 +1,80 @@
+{
+  "weeks_total": 24,
+  "phases": [
+    {
+      "name": "Phase 0 \u2013 Foundations",
+      "weeks": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "name": "Phase 1 \u2013 Offensive Entry",
+      "weeks": [
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    {
+      "name": "Phase 2 \u2013 Intermediate Exploitation",
+      "weeks": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ]
+    },
+    {
+      "name": "Phase 3 \u2013 OSCP Track",
+      "weeks": [
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24
+      ]
+    }
+  ],
+  "weekly_minimums": {
+    "every_week": [
+      "1 learning log",
+      "1 weekly review"
+    ],
+    "weeks_1_2": [
+      "1 hands-on practical lab note"
+    ],
+    "weeks_3_24": [
+      "1 exploit attempt"
+    ],
+    "weeks_4_24": [
+      "1 machine or target writeup"
+    ]
+  },
+  "required_tools_repeated": [
+    "nmap",
+    "Burp Suite",
+    "gobuster or ffuf",
+    "netcat",
+    "linpeas or winpeas"
+  ],
+  "required_consolidation_weeks": [
+    6,
+    12,
+    18
+  ],
+  "late_phase_requirements": [
+    "1 mock/timed simulation",
+    "1 report-heavy weekend"
+  ]
+}

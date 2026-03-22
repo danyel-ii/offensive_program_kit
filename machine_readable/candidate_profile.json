@@ -1,0 +1,64 @@
+{
+  "candidate_summary": "Advanced analytical self-learner, beginner in offensive cybersecurity operations, seeking structured path to OSCP-track/Tier-3-entry capability.",
+  "strengths": [
+    "pattern recognition",
+    "systems thinking",
+    "discipline with complex material",
+    "structured note-taking potential",
+    "conceptual familiarity with Python, R, Git, Linux, network/security concepts"
+  ],
+  "operational_gaps": [
+    "hands-on enumeration routine",
+    "exploitation repetition",
+    "privilege escalation instinct",
+    "OSCP-style speed",
+    "lab-machine volume"
+  ],
+  "desired_path": "offensive",
+  "starting_resources": [
+    "Jason Dion - CompTIA Network+ (Udemy)",
+    "Jason Dion - CompTIA Security+ (Udemy)"
+  ],
+  "weekly_schedule": {
+    "monday": {
+      "active_minutes": 120,
+      "elapsed_minutes": 130
+    },
+    "tuesday": {
+      "active_minutes": 120,
+      "elapsed_minutes": 130
+    },
+    "wednesday": {
+      "active_minutes": 240,
+      "elapsed_minutes": 270
+    },
+    "thursday": {
+      "active_minutes": 120,
+      "elapsed_minutes": 130
+    },
+    "friday": {
+      "active_minutes": 0,
+      "elapsed_minutes": 0
+    },
+    "saturday": {
+      "active_minutes": 240,
+      "elapsed_minutes": 270
+    },
+    "sunday": {
+      "active_minutes": 240,
+      "elapsed_minutes": 270
+    }
+  },
+  "weekly_totals": {
+    "active_minutes": 1080,
+    "elapsed_minutes": 1200
+  },
+  "design_preferences": {
+    "needs_explicit_tasks": true,
+    "needs_obsidian_integration": true,
+    "wants_finite_program": true,
+    "avoid_resource_overload": true,
+    "wants_early_hands_on": true,
+    "wants_consolidation_weeks": true
+  }
+}

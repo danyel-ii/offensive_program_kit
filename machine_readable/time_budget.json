@@ -1,0 +1,68 @@
+{
+  "break_rule": "Insert one 10-minute pause between each completed active hour, except after the final active hour of the session.",
+  "days": {
+    "Monday": {
+      "active_minutes": 120,
+      "break_minutes": 10,
+      "elapsed_minutes": 130,
+      "active_blocks": 2
+    },
+    "Tuesday": {
+      "active_minutes": 120,
+      "break_minutes": 10,
+      "elapsed_minutes": 130,
+      "active_blocks": 2
+    },
+    "Wednesday": {
+      "active_minutes": 240,
+      "break_minutes": 30,
+      "elapsed_minutes": 270,
+      "active_blocks": 4
+    },
+    "Thursday": {
+      "active_minutes": 120,
+      "break_minutes": 10,
+      "elapsed_minutes": 130,
+      "active_blocks": 2
+    },
+    "Friday": {
+      "active_minutes": 0,
+      "break_minutes": 0,
+      "elapsed_minutes": 0,
+      "active_blocks": 0
+    },
+    "Saturday": {
+      "active_minutes": 240,
+      "break_minutes": 30,
+      "elapsed_minutes": 270,
+      "active_blocks": 4
+    },
+    "Sunday": {
+      "active_minutes": 240,
+      "break_minutes": 30,
+      "elapsed_minutes": 270,
+      "active_blocks": 4
+    }
+  },
+  "weekly_totals": {
+    "active_minutes": 1080,
+    "break_minutes": 120,
+    "elapsed_minutes": 1200
+  },
+  "format_requirements": {
+    "two_hour_day_blocks": [
+      "Hour 1",
+      "Break",
+      "Hour 2"
+    ],
+    "four_hour_day_blocks": [
+      "Hour 1",
+      "Break",
+      "Hour 2",
+      "Break",
+      "Hour 3",
+      "Break",
+      "Hour 4"
+    ]
+  }
+}

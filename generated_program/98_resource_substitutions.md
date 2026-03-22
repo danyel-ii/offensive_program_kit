@@ -1,0 +1,3 @@
+# Resource Substitutions
+
+None.
