@@ -397,10 +397,20 @@ a {
   font-family: "JetBrains Mono", "IBM Plex Mono", monospace;
   font-weight: 700;
   font-size: 0.88rem;
+  transition:
+    transform 140ms ease,
+    color 140ms ease,
+    background-color 140ms ease;
 }
 
 .split-cell.dim {
   color: rgba(251, 243, 193, 0.22);
+}
+
+.split-cell.scrambling {
+  background: #1d1520;
+  color: var(--mint);
+  transform: translateY(-1px);
 }
 
 .task-shell {

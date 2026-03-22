@@ -4,6 +4,7 @@ import { marked } from "marked";
 const programDataUrl = `${import.meta.env.BASE_URL}programData.json`;
 const appIconUrl = `${import.meta.env.BASE_URL}icon.svg`;
 const installPromptEventName = "beforeinstallprompt";
+const boardAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
 const linkRenderer = new marked.Renderer();
 linkRenderer.link = function ({ href, title, tokens }) {
@@ -19,6 +20,32 @@ marked.setOptions({
 });
 
 const phaseColors = ["phase-shell", "phase-pulse", "phase-tide", "phase-ember"];
+const phaseBoardVariants = {
+  "Phase 0 - Foundations": {
+    FOUND: "PORT MAP",
+    ENTRY: "LAB NOTES",
+    MID: "SHELL DRILL",
+    TRACK: "SCOPE OK",
+  },
+  "Phase 1 - Offensive Entry": {
+    FOUND: "ENUM FIRST",
+    ENTRY: "WEB PATHS",
+    MID: "BURP FLOW",
+    TRACK: "FIRST POP",
+  },
+  "Phase 2 - Intermediate Exploitation": {
+    FOUND: "CHAIN RISK",
+    ENTRY: "PRIV CHECK",
+    MID: "LIN WIN",
+    TRACK: "MOVE FAST",
+  },
+  "Phase 3 - OSCP Track": {
+    FOUND: "MOCK OPS",
+    ENTRY: "TIME BOX",
+    MID: "PROOF NOW",
+    TRACK: "PG PUSH",
+  },
+};
 
 function markdownToHtml(markdown) {
   return { __html: marked.parse(markdown || "") };
@@ -33,6 +60,24 @@ function formatFrontmatterLabel(value) {
   return String(value).replace(/_/g, " ");
 }
 
+function fitBoardValue(value, length) {
+  return value.toUpperCase().slice(0, length).padEnd(length, " ");
+}
+
+function resolveBoardRows(rows, activePhase) {
+  const phaseVariant = phaseBoardVariants[activePhase];
+  if (!phaseVariant) return rows;
+
+  return rows.map((row) => ({
+    ...row,
+    value: fitBoardValue(phaseVariant[row.label] || row.value, row.value.length),
+  }));
+}
+
+function randomBoardChar() {
+  return boardAlphabet[Math.floor(Math.random() * boardAlphabet.length)];
+}
+
 function App() {
   const [programData, setProgramData] = useState(null);
   const [selectedType, setSelectedType] = useState("dashboard");
@@ -44,6 +89,7 @@ function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [installPrompt, setInstallPrompt] = useState(null);
   const [appInstalled, setAppInstalled] = useState(false);
+  const [boardPhase, setBoardPhase] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -55,6 +101,7 @@ function App() {
         setProgramData(payload);
         setSelectedId(payload.weeks[0]?.id ?? "");
         setSelectedDay(payload.dayOrder[0] ?? "Saturday");
+        setBoardPhase(payload.phases[0]?.title ?? "");
       }
     }
 
@@ -120,6 +167,16 @@ function App() {
   }, [selectedId, selectedWeek]);
 
   function selectView(type, id = "") {
+    if (programData) {
+      if (type === "phase") {
+        const phase = programData.phases.find((item) => item.id === id);
+        setBoardPhase(phase?.title ?? boardPhase);
+      } else if (type === "week") {
+        const week = programData.weeks.find((item) => item.id === id);
+        setBoardPhase(week?.phase ?? boardPhase);
+      }
+    }
+
     setSelectedType(type);
     setSelectedId(id);
     setSidebarOpen(false);
@@ -306,6 +363,7 @@ function App() {
         {selectedType === "dashboard" && (
           <DashboardView
             data={programData}
+            boardPhase={boardPhase}
             seconds={seconds}
             timerPaused={timerPaused}
             onToggleTimer={() => setTimerPaused((previous) => !previous)}
@@ -348,8 +406,10 @@ function SidebarButton({ active, title, meta, onClick, accentClass = "" }) {
   );
 }
 
-function DashboardView({ data, seconds, timerPaused, onToggleTimer, onSelectWeek, onSelectResource }) {
+function DashboardView({ data, boardPhase, seconds, timerPaused, onToggleTimer, onSelectWeek, onSelectResource }) {
   const currentWeek = data.weeks[0];
+  const boardRows = resolveBoardRows(data.toolRows, boardPhase);
+
   return (
     <>
       <section className="hero-card">
@@ -370,7 +430,7 @@ function DashboardView({ data, seconds, timerPaused, onToggleTimer, onSelectWeek
           </div>
         </div>
         <div className="hero-board">
-          <SplitFlapBoard rows={data.toolRows} />
+          <SplitFlapBoard rows={boardRows} phaseLabel={boardPhase} />
         </div>
       </section>
 
@@ -384,15 +444,48 @@ function DashboardView({ data, seconds, timerPaused, onToggleTimer, onSelectWeek
   );
 }
 
-function SplitFlapBoard({ rows }) {
+function SplitFlapBoard({ rows, phaseLabel }) {
+  const [displayRows, setDisplayRows] = useState(rows);
+
+  useEffect(() => {
+    let frame = 0;
+    const totalFrames = 16;
+    const interval = window.setInterval(() => {
+      frame += 1;
+      setDisplayRows(
+        rows.map((row) => {
+          const chars = row.value.split("");
+          const nextValue = chars
+            .map((char, index) => {
+              if (char === " ") return " ";
+              const settleFrame = Math.min(totalFrames, 4 + index);
+              return frame >= settleFrame ? char : randomBoardChar();
+            })
+            .join("");
+
+          return { ...row, displayValue: nextValue };
+        }),
+      );
+
+      if (frame >= totalFrames) {
+        window.clearInterval(interval);
+      }
+    }, 55);
+
+    return () => window.clearInterval(interval);
+  }, [rows]);
+
   return (
-    <div className="split-board">
-      {rows.map((row) => (
+    <div className="split-board" aria-label={`Status board for ${phaseLabel || "the current phase"}`}>
+      {displayRows.map((row) => (
         <div className="split-row" key={row.label}>
           <span className="split-label">{row.label}</span>
           <div className="split-cells">
-            {row.value.split("").map((char, index) => (
-              <span className={`split-cell ${char === " " ? "dim" : ""}`} key={`${row.label}-${index}`}>
+            {(row.displayValue || row.value).split("").map((char, index) => (
+              <span
+                className={`split-cell ${char === " " ? "dim" : ""} ${row.displayValue && char !== row.value[index] ? "scrambling" : ""}`}
+                key={`${row.label}-${index}`}
+              >
                 {char === " " ? "" : char}
               </span>
             ))}
