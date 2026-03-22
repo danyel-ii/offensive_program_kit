@@ -308,10 +308,20 @@ a {
   grid-template-columns: 1fr;
 }
 
+.hero-card.compact > * {
+  min-width: 0;
+}
+
+.hero-copy {
+  min-width: 0;
+}
+
 .hero-copy p {
   max-width: 62ch;
   color: var(--text-muted);
   line-height: 1.7;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .primary-button {
@@ -637,6 +647,9 @@ a {
   background: rgba(255, 255, 255, 0.08);
   color: inherit;
   font-size: 0.84rem;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .text-pill.strong {
@@ -888,6 +901,7 @@ a {
   .hero-actions,
   .pill-row {
     flex-wrap: wrap;
+    min-width: 0;
   }
 
   .day-tab-shell {
