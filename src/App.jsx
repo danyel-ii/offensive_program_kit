@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { marked } from "marked";
 
+const programDataUrl = `${import.meta.env.BASE_URL}programData.json`;
+
 const linkRenderer = new marked.Renderer();
 linkRenderer.link = function ({ href, title, tokens }) {
   const text = this.parser.parseInline(tokens);
@@ -42,7 +44,7 @@ function App() {
     let cancelled = false;
 
     async function loadProgramData() {
-      const response = await fetch("/programData.json");
+      const response = await fetch(programDataUrl);
       const payload = await response.json();
       if (!cancelled) {
         setProgramData(payload);

@@ -1,9 +1,0 @@
-{
-  "kit_name": "Codex Offensive Cybersecurity Program + Obsidian Vault Instruction Kit",
-  "version": "1.0",
-  "goal": "Generate a 24-week offensive cybersecurity program and matching Obsidian vault in one pass",
-  "outputs": [
-    "generated_program",
-    "generated_obsidian_vault"
-  ]
-}

@@ -1,6 +1,6 @@
 # offensive_program_kit
 
-React/Vite frontend plus source study-plan content for the offensive program kit.
+Trimmed deploy-only React/Vite app for GitHub Pages.
 
 ## Local development
 
@@ -15,23 +15,8 @@ npm run dev
 npm run build
 ```
 
-The production build is emitted to `dist/`.
+The production bundle is emitted to `dist/`.
 
-## GitHub Pages
+## Pages deployment
 
-This app is configured for the GitHub Pages repo URL:
-
-- `https://dh4wes.github.io/offensive_program_kit/`
-
-The Vite `base` path is set accordingly for production builds.
-
-## Source content
-
-The React app reads and restructures content from:
-
-- `generated_program/`
-- `generated_obsidian_vault/`
-
-The content build step writes a runtime JSON payload to:
-
-- `public/programData.json`
+This repo now deploys only the app. Runtime content is served from `public/programData.json`, and the Vite base path is relative so the build works on both a GitHub Pages repo URL and a custom domain once a `CNAME` file is added with the target hostname.
