@@ -21,7 +21,7 @@ The production build is emitted to `dist/`.
 
 This app is configured for the GitHub Pages repo URL:
 
-- `https://dh4wes.github.io/cybersecurity-study-companion/`
+- `https://dh4wes.github.io/offensive_program_kit/`
 
 The Vite `base` path is set accordingly for production builds.
 
