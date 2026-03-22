@@ -446,8 +446,11 @@ function DashboardView({ data, boardPhase, seconds, timerPaused, onToggleTimer, 
 
 function SplitFlapBoard({ rows, phaseLabel }) {
   const [displayRows, setDisplayRows] = useState(rows);
+  const rowsKey = rows.map((row) => `${row.label}:${row.value}`).join("|");
 
   useEffect(() => {
+    setDisplayRows(rows);
+
     let frame = 0;
     const totalFrames = 16;
     const interval = window.setInterval(() => {
@@ -473,7 +476,7 @@ function SplitFlapBoard({ rows, phaseLabel }) {
     }, 55);
 
     return () => window.clearInterval(interval);
-  }, [rows]);
+  }, [rowsKey]);
 
   return (
     <div className="split-board" aria-label={`Status board for ${phaseLabel || "the current phase"}`}>
