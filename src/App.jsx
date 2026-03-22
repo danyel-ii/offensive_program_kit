@@ -139,8 +139,8 @@ function App() {
           <section className="hero-card compact">
             <div className="hero-copy">
               <p className="eyebrow">Loading</p>
-              <h2>Building the study board from your generated markdown.</h2>
-              <p>The app loads the program and vault notes as structured JSON at runtime.</p>
+              <h2>Preparing your coursework workspace.</h2>
+              <p>The app loads the current program dataset at runtime.</p>
             </div>
           </section>
         </main>
@@ -172,7 +172,7 @@ function App() {
             <img src={appIconUrl} alt="offensive_program_kit icon" />
           </div>
           <div>
-            <p className="eyebrow">React Study Board</p>
+            <p className="eyebrow">Coursework Workspace</p>
             <h1>offensive_program_kit</h1>
           </div>
           <button className="sidebar-close" onClick={() => setSidebarOpen(false)} aria-label="Close navigation">
@@ -355,10 +355,10 @@ function DashboardView({ data, seconds, timerPaused, onToggleTimer, onSelectWeek
       <section className="hero-card">
         <div className="hero-copy">
           <p className="eyebrow">24-week command board</p>
-          <h2>Study plan, vault structure, and resource launchpad in one React shell.</h2>
+          <h2>Coursework plan, execution board, and resource launchpad in one workspace.</h2>
           <p>
-            The app is sourced from the generated markdown in this repo. You can move from phase overview
-            to day-level execution without leaving the same interface.
+            Move from phase overview to day-level execution without leaving the same interface. The
+            coursework dataset can be swapped independently from the deployed app.
           </p>
           <div className="hero-actions">
             <button className="primary-button" onClick={() => onSelectWeek(currentWeek.id)}>
@@ -506,7 +506,7 @@ function ResourceLaunchpadCard({ resources, onSelectResource }) {
         {resources.map((resource) => (
           <button className="resource-button" key={resource.id} onClick={() => onSelectResource(resource.id)}>
             <strong>{resource.title}</strong>
-            <small>{resource.sections.find((section) => section.heading === "Direct links") ? "Direct links included" : "Vault note"}</small>
+            <small>{resource.sections.find((section) => section.heading === "Direct links") ? "Direct links included" : "Reference note"}</small>
           </button>
         ))}
       </div>

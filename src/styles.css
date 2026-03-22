@@ -119,6 +119,7 @@ a {
   margin: 0;
   line-height: 1.05;
   letter-spacing: -0.04em;
+  overflow-wrap: anywhere;
 }
 
 .search {
@@ -263,6 +264,7 @@ a {
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 18px;
+  flex-wrap: wrap;
 }
 
 .mobile-nav-toggle,
@@ -707,17 +709,7 @@ a {
   .sidebar-nav,
   .hero-actions,
   .pill-row {
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    padding-bottom: 4px;
-    scrollbar-width: none;
-  }
-
-  .day-tabs::-webkit-scrollbar,
-  .sidebar-nav::-webkit-scrollbar,
-  .hero-actions::-webkit-scrollbar,
-  .pill-row::-webkit-scrollbar {
-    display: none;
+    flex-wrap: wrap;
   }
 
   .split-row {
@@ -780,6 +772,15 @@ a {
   .hero-copy h2,
   .card h3 {
     font-size: 1.15rem;
+  }
+
+  .day-tab,
+  .nav-chip,
+  .text-pill,
+  .primary-button,
+  .secondary-button {
+    max-width: 100%;
+    white-space: normal;
   }
 
   .search input,

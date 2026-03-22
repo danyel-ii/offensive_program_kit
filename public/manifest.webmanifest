@@ -1,7 +1,7 @@
 {
   "name": "offensive_program_kit",
   "short_name": "OP Kit",
-  "description": "React study board for the offensive program kit.",
+  "description": "Coursework workspace for the offensive program kit.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
