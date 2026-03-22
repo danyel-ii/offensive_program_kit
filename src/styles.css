@@ -352,6 +352,8 @@ a {
   gap: 14px;
   align-items: flex-start;
   margin-bottom: 22px;
+  min-width: 0;
+  flex-wrap: wrap;
 }
 
 .icon-badge {
@@ -384,6 +386,7 @@ a {
   grid-template-columns: 70px minmax(0, 1fr);
   gap: 12px;
   align-items: center;
+  min-width: 0;
 }
 
 .split-label {
@@ -397,6 +400,7 @@ a {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  min-width: 0;
 }
 
 .split-cell {
@@ -538,6 +542,8 @@ a {
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
+  min-width: 0;
+  flex-wrap: wrap;
 }
 
 .progress-meta span,
@@ -554,6 +560,8 @@ a {
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border-soft);
+  min-width: 0;
+  flex-wrap: wrap;
 }
 
 .phase-progress-row div {
@@ -658,6 +666,7 @@ a {
   flex-wrap: wrap;
   gap: 8px;
   align-items: center;
+  min-width: 0;
 }
 
 .day-complete-toggle {
@@ -668,6 +677,7 @@ a {
   padding: 10px 12px;
   background: rgba(255, 255, 255, 0.85);
   color: var(--text-dark);
+  max-width: 100%;
 }
 
 .day-complete-toggle.active {
@@ -745,7 +755,10 @@ a {
 .phase-item strong,
 .phase-item span,
 .phase-item small,
-.split-label {
+.split-label,
+.progress-meta strong,
+.progress-meta span,
+.phase-progress-row small {
   overflow-wrap: anywhere;
 }
 
@@ -885,6 +898,17 @@ a {
   .day-complete-toggle {
     flex: 1 1 0;
     justify-content: center;
+    min-width: 0;
+  }
+
+  .progress-meta,
+  .phase-progress-row {
+    align-items: flex-start;
+  }
+
+  .progress-meta > *,
+  .phase-progress-row > * {
+    min-width: 0;
   }
 
   .split-row {
@@ -956,6 +980,12 @@ a {
   .secondary-button {
     max-width: 100%;
     white-space: normal;
+  }
+
+  .hero-actions > *,
+  .sidebar-nav > *,
+  .day-tab-shell > * {
+    width: 100%;
   }
 
   .search input,
